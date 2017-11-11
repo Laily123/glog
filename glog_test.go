@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package glog
+package log
 
 import (
 	"bytes"
@@ -83,6 +83,19 @@ func contains(s severity, str string, t *testing.T) bool {
 // setFlags configures the logging flags how the test expects them.
 func setFlags() {
 	logging.toStderr = false
+}
+
+// Test that Info works as advertised.
+func TestDebug(t *testing.T) {
+	setFlags()
+	defer logging.swap(logging.newBuffers())
+	Debug("test")
+	if !contains(debugLog, "D", t) {
+		t.Errorf("Debug has wrong character: %q", contents(debugLog))
+	}
+	if !contains(debugLog, "test", t) {
+		t.Error("Debug failed")
+	}
 }
 
 // Test that Info works as advertised.
