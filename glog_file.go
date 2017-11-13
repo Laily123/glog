@@ -41,7 +41,6 @@ var logDirs []string
 var logDir = new(string)
 
 func createLogDirs() {
-	fmt.Println("log: ",*logDir)
 	if *logDir != "" {
 		logDirs = append(logDirs, *logDir)
 	}
