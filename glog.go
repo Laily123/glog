@@ -106,7 +106,7 @@ const (
 )
 
 const (
-	LEVEL_DEBUG severity = iota
+	LEVEL_DEBUG int32 = iota
 	LEVEL_INFO
 	LEVEL_WARNING
 	LEVEL_ERROR
@@ -416,12 +416,12 @@ func init() {
 	// Default stderrThreshold is ERROR.
 
 	logging.toStderr = false
-	logging.alsoToStderr = true
+	logging.alsoToStderr = false
 	SetOutput("")
 
 	//logging.vmodule = "vmodule"
 	//logging.traceLocation = "log_backtrace_at"
-	logging.stderrThreshold = errorLog
+	logging.stderrThreshold = debugLog
 
 	logging.setVState(0, nil, false)
 	go logging.flushDaemon()
@@ -738,7 +738,7 @@ func (l *loggingT) output(s severity, buf *buffer, file string, line int, alsoTo
 		// Write the stack trace for all goroutines to the files.
 		trace := stacks(true)
 		logExitFunc = func(error) {} // If we get a write error, we'll still exit below.
-		for log := fatalLog; log >= infoLog; log-- {
+		for log := fatalLog; log >= debugLog; log-- {
 			if f := l.file[log]; f != nil { // Can be nil if -logtostderr is set.
 				f.Write(trace)
 			}
@@ -878,7 +878,7 @@ func (l *loggingT) createFiles(sev severity) error {
 	now := time.Now()
 	// Files are created in decreasing severity order, so as soon as we find one
 	// has already been created, we can stop.
-	for s := sev; s >= infoLog && l.file[s] == nil; s-- {
+	for s := sev; s >= debugLog && l.file[s] == nil; s-- {
 		sb := &syncBuffer{
 			logger: l,
 			sev:    s,
@@ -911,7 +911,7 @@ func (l *loggingT) lockAndFlushAll() {
 // l.mu is held.
 func (l *loggingT) flushAll() {
 	// Flush from fatal down, in case there's trouble flushing.
-	for s := fatalLog; s >= infoLog; s-- {
+	for s := fatalLog; s >= debugLog; s-- {
 		file := l.file[s]
 		if file != nil {
 			file.Flush() // ignore error
