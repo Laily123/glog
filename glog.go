@@ -416,12 +416,12 @@ func init() {
 	// Default stderrThreshold is ERROR.
 
 	logging.toStderr = false
-	logging.alsoToStderr = true
+	logging.alsoToStderr = false
 	SetOutput("")
 
 	//logging.vmodule = "vmodule"
 	//logging.traceLocation = "log_backtrace_at"
-	logging.stderrThreshold = errorLog
+	logging.stderrThreshold = debugLog
 
 	logging.setVState(0, nil, false)
 	go logging.flushDaemon()
@@ -693,7 +693,6 @@ func (l *loggingT) output(s severity, buf *buffer, file string, line int, alsoTo
 		}
 	}
 	data := buf.Bytes()
-	fmt.Println("aaa",s,l.stderrThreshold.get())
 	if l.toStderr {
 		os.Stderr.Write(data)
 	} else {
